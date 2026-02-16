@@ -128,7 +128,7 @@ Mcu_Init(&Mcu_Config_VS_0);
 	}
 }
 
-//TODO: Necessary defines for the Motor Temperature bar filling and its borders (shared with the Inverter and Time lap)
+//TODO: Necessary defines for the Motor Temperature bar filling and its borders (shared with the Inverter and Time lap) and bar colors
 
 #ifdef __cplusplus
 }

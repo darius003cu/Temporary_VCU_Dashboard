@@ -44,10 +44,10 @@ extern "C" {
 /*==================================================================================================
  *                                      GLOBAL VARIABLES
 ==================================================================================================*/
-uint32 battery_percent = 0, speed = 0, power = 0, inverter_temp = 0, battery_voltage = 0, battery_temp = 0, brake = 0, acceleration = 0;
+uint32_t battery_percent = 0, speed = 0, power = 0, inverter_temp = 0, battery_voltage = 0, battery_temp = 0, brake = 0, acceleration = 0;
 bool isWriting = false;
-uint8 Battery_Percentage = 0;
-uint16 Motor_Temperature = 0, Cell_Voltage = 0, Cell_Temperature = 0, Total_Current = 0;
+uint8_t Battery_Percentage = 0;
+uint16_t Motor_Temperature = 0, Cell_Voltage = 0, Cell_Temperature = 0, Total_Current = 0;
 /*==================================================================================================
  *                                   LOCAL FUNCTION PROTOTYPES
 ==================================================================================================*/
@@ -153,7 +153,7 @@ void SoundTest(void){
 	while(1){
 		wr8(REG_VOL_SOUND,0xFF);
 		wr32(REG_GPIOX_DIR, 0x00008004);
-		volatile uint32 delei;
+		volatile uint32_t delei;
 		while(1){
 			wr32(REG_GPIOX, 0x00008004); // enable amp
 			wr16(REG_SOUND, (0x6C<< 8) | 0x41);
@@ -171,7 +171,7 @@ void SoundTest(void){
 }
 
 void newDashboardTest(){
-	volatile uint32 delay = 35000;
+	volatile uint32_t delay = 35000;
 	while(delay--);
 	newDashboardUpdate(Battery_Percentage, Motor_Temperature);
 	Battery_Percentage++;
@@ -180,10 +180,10 @@ void newDashboardTest(){
 	Motor_Temperature %= 100;
 }
 
-void newDashboardUpdate(uint8 Battery_Percentage, uint16 Motor_Temperature){
-	uint32 index = 0;
-	uint8 Red, Green, Blue = 0;
-	volatile uint32 Height_Offset, Width_Offset;
+void newDashboardUpdate(uint8_t Battery_Percentage, uint16_t Motor_Temperature){
+	uint32_t index = 0;
+	uint8_t Red, Green, Blue = 0;
+	volatile uint32_t Height_Offset, Width_Offset;
 
 	if(Battery_Percentage > 100U)
 	{
@@ -481,15 +481,15 @@ void newDashboardUpdate(uint8 Battery_Percentage, uint16 Motor_Temperature){
 		}
 
 		if(Motor_Temperature <= MOTOR_LIMITED_TEMP){
-			Red = 120 + Motor_Temperature * 2;
-			Green = 250 - Motor_Temperature * 3;
-			Blue = 50;
+			Red = Motor_Temperature * 4;
+			Green = Motor_Temperature * 2 + 30;
+			Blue = 240 - Motor_Temperature * 4;
 		}
 
-		else if(Motor_Temperature > MOTOR_LIMITED_TEMP){
-			Red = 240 + Motor_Temperature / 10;
-			Green = 70 - Motor_Temperature / 6;
-			Blue = 50;
+		else if(Motor_Temperature > MOTOR_LIMITED_TEMP && Motor_Temperature <= 80){
+			Red = 240;
+			Green = 150 - Motor_Temperature * 2;
+			Blue = 0;
 		}
 		wr32(RAM_DL + (index+=4), color_rgb(Red, Green, Blue));				//50, 255, 150
 		wr32(RAM_DL + (index+=4), vertex2f(800, 480));
@@ -586,8 +586,8 @@ void newDashboardUpdate(uint8 Battery_Percentage, uint16 Motor_Temperature){
 	}
 }
 
-void DashboardTest(uint8 address){
-	volatile uint32 delay = 35000;
+void DashboardTest(uint8_t address){
+	volatile uint32_t delay = 35000;
 	while(delay--);
 	DashboardUpdate(speed, power, battery_voltage, battery_percent, battery_temp*2/3, inverter_temp/2, brake, acceleration, false, address);
 	battery_percent++;
@@ -612,12 +612,12 @@ void DashboardInit(void){
 
 }
 
-void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 battery_percent, uint32 battery_temp, uint32 inverter_temp, uint32 brake, uint32 acceleration, boolean BSPD, uint8 witness){
-	uint8 color_red = 0, color_blue = 0, color_green = 0, text_offset = 0;
-	uint16 height_offset, width_offset;
-	uint16 limited_temp;
-	uint32 power_kw;
-	uint32 index = 0;
+void DashboardUpdate(uint32_t speed, uint32_t power, uint32_t battery_voltage, uint32_t battery_percent, uint32_t battery_temp, uint32_t inverter_temp, uint32_t brake, uint32_t acceleration, boolean BSPD, uint8_t witness){
+	uint8_t color_red = 0, color_blue = 0, color_green = 0, text_offset = 0;
+	uint16_t height_offset, width_offset;
+	uint16_t limited_temp;
+	uint32_t power_kw;
+	uint32_t index = 0;
 	//input value tests
 	if(battery_percent > 100U){
 		battery_percent = 100U;
@@ -675,7 +675,7 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 		wr32(RAM_DL + (index+=4), vertex2f(595, 50));
 		//BRAKE INDICATOR
 		wr32(RAM_DL + (index+=4), save_context());
-		width_offset = ((uint32) PEDAL_WIDTH) * brake / ((uint32)100U);
+		width_offset = ((uint32_t) PEDAL_WIDTH) * brake / ((uint32_t)100U);
 		wr32(RAM_DL + (index+=4), color_rgb(255, 0, 0)); // change color to red
 		wr32(RAM_DL + (index+=4), begin(RECTS));
 		wr32(RAM_DL + (index+=4), vertex2f(0, 0));
@@ -683,7 +683,7 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 		//brake static text
 		wr32(RAM_DL + (index+=4), begin(BITMAPS)); //begin drawing text with color inherited from above
 		char brake_text[] = "BRAKE";
-		uint16 horizontal_offsets_brake[] = {0, PEDAL_FONT_WIDTH, PEDAL_FONT_WIDTH * 2, PEDAL_FONT_WIDTH * 3, PEDAL_FONT_WIDTH * 4};
+		uint16_t horizontal_offsets_brake[] = {0, PEDAL_FONT_WIDTH, PEDAL_FONT_WIDTH * 2, PEDAL_FONT_WIDTH * 3, PEDAL_FONT_WIDTH * 4};
 		for(int i=0; i<5; i++){
 			wr32(RAM_DL + (index+=4), vertex2ii(PEDAL_BRAKE_TEXT_X + horizontal_offsets_brake[i], PEDAL_BRAKE_TEXT_Y, PEDAL_FONT, brake_text[i]));
 		}
@@ -793,7 +793,7 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 
 		//ACCELERATION INDICATOR
 		wr32(RAM_DL + (index+=4), save_context());
-		width_offset = ((uint32) PEDAL_WIDTH) * acceleration / ((uint32)100U);
+		width_offset = ((uint32_t) PEDAL_WIDTH) * acceleration / ((uint32_t)100U);
 		wr32(RAM_DL + (index+=4), color_rgb(0, 255, 0)); // change color to green
 		wr32(RAM_DL + (index+=4), begin(RECTS));
 		wr32(RAM_DL + (index+=4), vertex2f(800, 0));
@@ -801,7 +801,7 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 		//acceleration static text
 		wr32(RAM_DL + (index+=4), begin(BITMAPS)); //begin drawing text with color inherited from above
 		char accel_text[] = "ACCEL";
-		uint16 horizontal_offsets_accel[] = {0, PEDAL_FONT_WIDTH, PEDAL_FONT_WIDTH * 2, PEDAL_FONT_WIDTH * 3, PEDAL_FONT_WIDTH * 4};
+		uint16_t horizontal_offsets_accel[] = {0, PEDAL_FONT_WIDTH, PEDAL_FONT_WIDTH * 2, PEDAL_FONT_WIDTH * 3, PEDAL_FONT_WIDTH * 4};
 		for(int i=0; i<5; i++){
 			wr32(RAM_DL + (index+=4), vertex2ii(PEDAL_ACCEL_TEXT_X + horizontal_offsets_accel[i], PEDAL_ACCEL_TEXT_Y, PEDAL_FONT, accel_text[i]));
 		}
@@ -818,7 +818,7 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 			color_red = 255U;
 			color_green = battery_percent * 255U / 50U;
 		}
-		height_offset = ((uint32) BATTERY_HEIGHT - BATTERY_THICKNESS) * (100U - battery_percent) / ((uint32)100U);
+		height_offset = ((uint32_t) BATTERY_HEIGHT - BATTERY_THICKNESS) * (100U - battery_percent) / ((uint32_t)100U);
 
 		wr32(RAM_DL + (index+=4), save_context());
 		//moving colored battery indicator
@@ -874,7 +874,7 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 			color_red = limited_temp * 255U * 2 / INVERTER_TEMP_MAX;
 			color_green = 0U;
 		}
-		height_offset = ((uint32) INVERTER_TEMP_HEIGHT - INVERTER_TEMP_THICKNESS) * (INVERTER_TEMP_MAX - limited_temp) / ((uint32)INVERTER_TEMP_MAX);
+		height_offset = ((uint32_t) INVERTER_TEMP_HEIGHT - INVERTER_TEMP_THICKNESS) * (INVERTER_TEMP_MAX - limited_temp) / ((uint32_t)INVERTER_TEMP_MAX);
 
 		wr32(RAM_DL + (index+=4), save_context());
 		//moving colored inverter temp indicator
@@ -898,7 +898,7 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 		wr32(RAM_DL + (index+=4), vertex2ii(INVERTER_TEMP_TEXT_X - INVERTER_TEMP_FONT_WIDTH + INVERTER_TEMP_FONT_WIDTH * text_offset / 2, INVERTER_TEMP_TEXT_Y, INVERTER_TEMP_FONT, 'C')); // print percent symbol
 		//inverter static text
 		char inverter_text[] = "Inverter:";
-		uint16 horizontal_offsets[] = {0, INVERTER_TEMP_FONT_WIDTH / 3, INVERTER_TEMP_FONT_WIDTH * 8 / 7, INVERTER_TEMP_FONT_WIDTH * 13/7, INVERTER_TEMP_FONT_WIDTH * 19/7, INVERTER_TEMP_FONT_WIDTH * 23/7, INVERTER_TEMP_FONT_WIDTH * 27/7, INVERTER_TEMP_FONT_WIDTH * 33/7, INVERTER_TEMP_FONT_WIDTH * 37/7};
+		uint16_t horizontal_offsets[] = {0, INVERTER_TEMP_FONT_WIDTH / 3, INVERTER_TEMP_FONT_WIDTH * 8 / 7, INVERTER_TEMP_FONT_WIDTH * 13/7, INVERTER_TEMP_FONT_WIDTH * 19/7, INVERTER_TEMP_FONT_WIDTH * 23/7, INVERTER_TEMP_FONT_WIDTH * 27/7, INVERTER_TEMP_FONT_WIDTH * 33/7, INVERTER_TEMP_FONT_WIDTH * 37/7};
 		for(int i=0; i<9; i++){
 			wr32(RAM_DL + (index+=4), vertex2ii(INVERTER_TEMP_TEXT_X - 45U + horizontal_offsets[i], INVERTER_TEMP_TEXT_Y - INVERTER_TEMP_FONT_HEIGHT - 10U, INVERTER_TEMP_FONT, inverter_text[i]));
 		}
@@ -924,7 +924,7 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 			color_red = limited_temp * 255U * 2 / BATTERY_TEMP_MAX;
 			color_green = 0U;
 		}
-		height_offset = ((uint32) BATTERY_TEMP_HEIGHT - BATTERY_TEMP_THICKNESS) * (BATTERY_TEMP_MAX - limited_temp) / ((uint32)BATTERY_TEMP_MAX);
+		height_offset = ((uint32_t) BATTERY_TEMP_HEIGHT - BATTERY_TEMP_THICKNESS) * (BATTERY_TEMP_MAX - limited_temp) / ((uint32_t)BATTERY_TEMP_MAX);
 
 		wr32(RAM_DL + (index+=4), save_context());
 		wr32(RAM_DL + (index+=4), vertex_translate_x(400*16));
@@ -949,9 +949,9 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 		wr32(RAM_DL + (index+=4), vertex2ii(BATTERY_TEMP_TEXT_X - BATTERY_TEMP_FONT_WIDTH + BATTERY_TEMP_FONT_WIDTH * text_offset / 2, BATTERY_TEMP_TEXT_Y, BATTERY_TEMP_FONT, 'C')); // print percent symbol
 		//battery static text
 		char battery_text[] = "Motor:";
-		//uint16 battery_horizontal_offsets[] = {0, BATTERY_TEMP_FONT_WIDTH * 7/ 7, BATTERY_TEMP_FONT_WIDTH * 13 / 7, BATTERY_TEMP_FONT_WIDTH * 17/7, BATTERY_TEMP_FONT_WIDTH * 20/7, BATTERY_TEMP_FONT_WIDTH * 26/7, BATTERY_TEMP_FONT_WIDTH * 30/7, BATTERY_TEMP_FONT_WIDTH * 36/7};
+		//uint16_t battery_horizontal_offsets[] = {0, BATTERY_TEMP_FONT_WIDTH * 7/ 7, BATTERY_TEMP_FONT_WIDTH * 13 / 7, BATTERY_TEMP_FONT_WIDTH * 17/7, BATTERY_TEMP_FONT_WIDTH * 20/7, BATTERY_TEMP_FONT_WIDTH * 26/7, BATTERY_TEMP_FONT_WIDTH * 30/7, BATTERY_TEMP_FONT_WIDTH * 36/7};
 		//temporar
-		uint16 battery_horizontal_offsets[] = {0, BATTERY_TEMP_FONT_WIDTH * 9/ 7, BATTERY_TEMP_FONT_WIDTH * 15 / 7, BATTERY_TEMP_FONT_WIDTH * 18/7, BATTERY_TEMP_FONT_WIDTH * 24/7, BATTERY_TEMP_FONT_WIDTH * 28/7};
+		uint16_t battery_horizontal_offsets[] = {0, BATTERY_TEMP_FONT_WIDTH * 9/ 7, BATTERY_TEMP_FONT_WIDTH * 15 / 7, BATTERY_TEMP_FONT_WIDTH * 18/7, BATTERY_TEMP_FONT_WIDTH * 24/7, BATTERY_TEMP_FONT_WIDTH * 28/7};
 		for(int i=0; i<6; i++){
 			//wr32(RAM_DL + (index+=4), vertex2ii(BATTERY_TEMP_TEXT_X - 90U + battery_horizontal_offsets[i], BATTERY_TEMP_TEXT_Y - BATTERY_TEMP_FONT_HEIGHT - 10U, BATTERY_TEMP_FONT, battery_text[i]));
 			wr32(RAM_DL + (index+=4), vertex2ii(BATTERY_TEMP_TEXT_X - 70U + battery_horizontal_offsets[i], BATTERY_TEMP_TEXT_Y - BATTERY_TEMP_FONT_HEIGHT - 10U, BATTERY_TEMP_FONT, battery_text[i]));
@@ -1003,8 +1003,8 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 		wr32(RAM_DL + (index+=4), bitmap_size(0, 0, 0, SPEEDOMETER_FONT_WIDTH, SPEEDOMETER_FONT_HEIGHT));
 		//indices numbers
 		wr32(RAM_DL + (index+=4), color_rgb(230, 230, 0)); // change color to yellow
-		for(uint16 i = 0; i <= SPEEDOMETER_INDICES_NUM; i++){
-			uint16 angle = (SPEEDOMETER_END_ANGLE - SPEEDOMETER_START_ANGLE) - i * (SPEEDOMETER_END_ANGLE - SPEEDOMETER_START_ANGLE) / SPEEDOMETER_INDICES_NUM + SPEEDOMETER_START_ANGLE, value = i * SPEEDOMETER_MAX_VALUE / SPEEDOMETER_INDICES_NUM;
+		for(uint16_t i = 0; i <= SPEEDOMETER_INDICES_NUM; i++){
+			uint16_t angle = (SPEEDOMETER_END_ANGLE - SPEEDOMETER_START_ANGLE) - i * (SPEEDOMETER_END_ANGLE - SPEEDOMETER_START_ANGLE) / SPEEDOMETER_INDICES_NUM + SPEEDOMETER_START_ANGLE, value = i * SPEEDOMETER_MAX_VALUE / SPEEDOMETER_INDICES_NUM;
 			sint32 x = sin(angle * 0.0175) * (SPEEDOMETER_INNER_RADIUS + SPEEDOMETER_RADIUS) / 2, y = cos(angle * 0.0175) * (SPEEDOMETER_INNER_RADIUS + SPEEDOMETER_RADIUS) / 2;
 			text_offset = 0;
 			if(value >= 1000U){
@@ -1101,8 +1101,8 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 		wr32(RAM_DL + (index+=4), bitmap_size(0, 0, 0, POWERMETER_FONT_WIDTH, POWERMETER_FONT_HEIGHT));
 		//indices numbers
 		wr32(RAM_DL + (index+=4), color_rgb(230U, 230U, 0U)); // change color to yellow
-		for(uint16 i = 0; i <= POWERMETER_INDICES_NUM; i++){
-			uint16 angle = (POWERMETER_END_ANGLE - POWERMETER_START_ANGLE) - i * (POWERMETER_END_ANGLE - POWERMETER_START_ANGLE) / POWERMETER_INDICES_NUM + POWERMETER_START_ANGLE, value = i * POWERMETER_MAX_VALUE / POWERMETER_INDICES_NUM;
+		for(uint16_t i = 0; i <= POWERMETER_INDICES_NUM; i++){
+			uint16_t angle = (POWERMETER_END_ANGLE - POWERMETER_START_ANGLE) - i * (POWERMETER_END_ANGLE - POWERMETER_START_ANGLE) / POWERMETER_INDICES_NUM + POWERMETER_START_ANGLE, value = i * POWERMETER_MAX_VALUE / POWERMETER_INDICES_NUM;
 			sint32 x = sin(angle * 0.0175) * (POWERMETER_INNER_RADIUS + POWERMETER_RADIUS) / 2, y = cos(angle * 0.0175) * (POWERMETER_INNER_RADIUS + POWERMETER_RADIUS) / 2;
 			text_offset = 0;
 			if(value >= 1000U){
@@ -1185,18 +1185,18 @@ void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 
 	//pentru scriere 	wr32(RAM_DL + (index+=4) );
 
 	void ImageTest(void){
-		uint32 index;
-		uint32 unghi = 0;
+		uint32_t index;
+		uint32_t unghi = 0;
 		//float x, y;
 
-		uint32 j=0;
+		uint32_t j=0;
 		//scriere imagine in memorie
-		for(uint32 i=0; i< 16384; i+=4, j+=4){
-			wr32(RAM_G + j, (((uint32)GUTA[i]) << 0) | (((uint32)GUTA[i+1]) << 8) | (((uint32)GUTA[i+2]) << 16) | (((uint32)GUTA[i+3]) << 24));
+		for(uint32_t i=0; i< 16384; i+=4, j+=4){
+			wr32(RAM_G + j, (((uint32_t)GUTA[i]) << 0) | (((uint32_t)GUTA[i+1]) << 8) | (((uint32_t)GUTA[i+2]) << 16) | (((uint32_t)GUTA[i+3]) << 24));
 		}
 
-		uint32 x = 0 ,y = 0;
-		uint8 dirX = 1, dirY = 1; //x: 1 = dreapta, 0 = stanga; y: 1 = jos, 0 = sus
+		uint32_t x = 0 ,y = 0;
+		uint8_t dirX = 1, dirY = 1; //x: 1 = dreapta, 0 = stanga; y: 1 = jos, 0 = sus
 		while(1){
 			index = 0;
 			if(unghi == 0){

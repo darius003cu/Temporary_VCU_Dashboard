@@ -12,6 +12,7 @@ extern "C"{
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
 #include "Spi.h"
+#include "stdint.h"
 /*==================================================================================================
 *                              SOURCE FILE VERSION INFORMATION
 ==================================================================================================*/
@@ -182,12 +183,12 @@ void DisplayTest(void);
 void DisplayTest2(void);
 void ImageTest(void);
 void SoundTest(void);
-void DashboardTest(uint8 address);
+void DashboardTest(uint8_t address);
 void DashboardInit(void);
-void DashboardUpdate(uint32 speed, uint32 power, uint32 battery_voltage, uint32 battery_percent, uint32 battery_temp, uint32 inverter_temp, uint32 brake, uint32 acceleration, boolean BSPD, uint8 witness);
-void DashboardWitnesses(volatile uint8 address);
+void DashboardUpdate(uint32_t speed, uint32_t power, uint32_t battery_voltage, uint32_t battery_percent, uint32_t battery_temp, uint32_t inverter_temp, uint32_t brake, uint32_t acceleration, boolean BSPD, uint8_t witness);
+void DashboardWitnesses(volatile uint8_t address);
 void newDashboardTest(void);
-void newDashboardUpdate(uint8 Battery_Percentage, uint16 Motor_Temperature);
+void newDashboardUpdate(uint8_t Battery_Percentage, uint16_t Motor_Temperature);
 #ifdef __cplusplus
 }
 #endif
